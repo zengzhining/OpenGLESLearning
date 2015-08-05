@@ -13,10 +13,12 @@ varying vec2 v_position;
 
 void main()
 {
-    gl_Position = CC_MVPMatrix * vec4(a_position.xy,0,1);
+    gl_Position = CC_PMatrix* CC_MVMatrix * vec4(a_position.xy,0,1) ;
+
+    vec4 position = CC_MVMatrix * vec4(a_position.xy,0,1);
     
     v_fragmentColor = a_color;
     v_coord = a_coord;
     v_normal = a_normal;
-    v_position = a_position;
+    v_position = vec2(position.x, position.y);
 }
