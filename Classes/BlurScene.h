@@ -1,4 +1,4 @@
-#ifndef __BLURSCENE___
+﻿#ifndef __BLURSCENE___
 
 #define __BLURSCENE___
 
@@ -15,7 +15,18 @@ public:
 
 	void update(float dt);
 
+	//方盒滤镜
+	void runBoxFilter();
+
+	//边沿滤镜
+	void runEdgeFilter();
+
+	void runOwnAct();
+
 	static Scene* createScene();
+
+public:
+	Sprite* hero;
 protected:
 private:
 	GLProgram* mShader;

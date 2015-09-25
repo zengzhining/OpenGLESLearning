@@ -2,43 +2,52 @@
 
 USING_NS_CC;
 
-BoxfilterAct* BoxfilterAct::create()
+BoxfilterAct* BoxfilterAct::create(float time, float from, float to )
 {
 	auto filter = new BoxfilterAct();
-	filter->init();
+	filter->init(time, from, to);
 	filter->autorelease();
 
 	return filter;
 	
 }
 
-bool BoxfilterAct::init()
+bool BoxfilterAct::init(float time, float from, float to)
 {
-	if(ActionInterval::initWithDuration(1.0f))
+	if (ActionInterval::initWithDuration(time))
+	{
+		_durition = time;
+		_from = from;
+		_to = to;
+		_deltaNumber = _to - _from;
 		return true;
+	}
+		
 	return false;
 }
 
-BoxfilterAct* BoxfilterAct::clone()
+BoxfilterAct* BoxfilterAct::clone() const
 {
 	auto filter = new BoxfilterAct();
-	filter->init();
+	filter->init(_durition, _from, _to);
 	filter->autorelease();
 
 	return filter;
 
 }
 
-BoxfilterAct* BoxfilterAct::reverse()
+BoxfilterAct* BoxfilterAct::reverse() const
 {
-	auto filter = this->clone();
-	filter->_tag = false;
+	auto filter = BoxfilterAct::create(_durition, _to, _from);
 	return filter;
 }
 
 void BoxfilterAct::startWithTarget(Node *target)
 {
 	ActionInterval::startWithTarget(target);
+	
+	
+	_num = _from;
 
 	_shader = GLProgram::createWithFilenames("myShader/MVP_Stand.vert", "myShader/BoxFilter.frag");
 
@@ -46,24 +55,70 @@ void BoxfilterAct::startWithTarget(Node *target)
 
 	_state->setGLProgram(_shader);
 
-	_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), 0.0f);
-	
+	_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), _num);
+
 
 }
 
 void BoxfilterAct::update(float time)
 {
-	
-	if (_tag == true)
-	{
-		_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), time * 0.01f);
-		log("true");
-	}
-	
-	else
-	{
-		_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), -time * 0.01f);
-		log("false");
-	}
+		//单位时间内所要达到的数字
+		_num = _num + _deltaNumber / (60 * _durition);
+		_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), _num );
+}
 
+//方波特效
+EdgeFilterAct* EdgeFilterAct::create(float time, float from, float to)
+{
+	EdgeFilterAct* filter = new EdgeFilterAct();
+	filter->init(time, from, to);
+	filter->autorelease();
+	return filter;
+}
+
+bool EdgeFilterAct::init(float time, float from, float to)
+{
+	if (ActionInterval::initWithDuration(time))
+	{
+		_duration = time;
+		_from = from;
+		_to = to;
+		_deltaNum = _to - _from;
+		return true;
+	}
+	return false;
+}
+
+void EdgeFilterAct::startWithTarget(Node *target)
+{
+	ActionInterval::startWithTarget(target);
+	_num = _from;
+
+	_shader = GLProgram::createWithFilenames("myShader/MVP_Stand.vert", "myShader/EdgeFilter.frag");
+
+	_state = target->getGLProgramState();
+
+	_state->setGLProgram(_shader);
+
+	_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), _num);
+
+}
+
+void EdgeFilterAct::update(float time)
+{
+	auto animationInter = 1.0f/ Director::getInstance()->getAnimationInterval();
+	_num += _deltaNum / ((animationInter) * _duration);
+	_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), _num);
+}
+
+EdgeFilterAct* EdgeFilterAct::clone() const
+{
+	auto filter = EdgeFilterAct::create(_duration, _from, _to);
+	return filter;
+}
+
+EdgeFilterAct* EdgeFilterAct::reverse() const
+{
+	auto filter = EdgeFilterAct::create(_duration, _to, _from);
+	return filter;
 }

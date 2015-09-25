@@ -1,4 +1,5 @@
 #include "BlurScene.h"
+#include "BlurAction.h"
 
 USING_NS_CC;
 
@@ -16,42 +17,40 @@ Scene* BlurScene::createScene()
 bool BlurScene::init()
 {
 	auto size = Director::getInstance()->getWinSize();
-	auto hero = Sprite::create("HelloWorld.png");
+	hero = Sprite::create("HelloWorld.png");
 	hero->setPosition(size / 2);
 	addChild(hero);
 
-	mShader = GLProgram::createWithFilenames("myShader/MVP_Stand.vert", "myShader/BoxFilter.frag");
+	//runBoxFilter();
 
-	GLPState = hero->getGLProgramState();
+	//runEdgeFilter();
 
-	GLPState->setGLProgram(mShader);
-	GLPState->setUniformFloat(mShader->getUniformLocationForName("u_number"), 0.01);
-
-	num = 0.0f;
-	tag = true;
-
-	scheduleUpdate();
+	runOwnAct();
 
 	return true;
 }
 
+void BlurScene::runBoxFilter()
+{
+	auto act = BoxfilterAct::create(2, 0.0f, 0.5);
+
+	hero->runAction(RepeatForever::create(Sequence::create(act, DelayTime::create(0.5), act->reverse(), DelayTime::create(0.5), NULL)));
+
+}
+
+void BlurScene::runEdgeFilter()
+{
+	auto act = EdgeFilterAct::create(2.0f, 0.0f, 0.008f);
+	hero->runAction(RepeatForever::create(Sequence::create(act, DelayTime::create(0.5), act->reverse(), DelayTime::create(0.5), NULL)));
+}
+
+void BlurScene::runOwnAct()
+{
+	auto act = BoxfilterAct::create(2, 0.0f, 0.5);
+	auto act2 = EdgeFilterAct::create(2.0f, 0.0f, 0.008f);
+}
+
 void BlurScene::update(float dt)
 {
-	//使用定时器控制shader
-	if (tag == true)
-	{
-		num += 0.0001f;
-	}
-	else
-		num -= 0.0001f;
-
-	if (num >= 0.01)
-		tag = false;
-
-	if (num <= -0.01)
-		tag = true;
-
-	log("num : %f", num);
-	GLPState->setUniformFloat(mShader->getUniformLocationForName("u_number"), num);
 
 }
