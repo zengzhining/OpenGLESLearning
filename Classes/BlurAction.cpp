@@ -2,17 +2,17 @@
 
 USING_NS_CC;
 
-BoxfilterAct* BoxfilterAct::create(float time, float from, float to )
+BoxfilterAct* BoxfilterAct::create(float time, float from, float to, bool isSke )
 {
 	auto filter = new BoxfilterAct();
-	filter->init(time, from, to);
+	filter->init(time, from, to, isSke);
 	filter->autorelease();
 
 	return filter;
 	
 }
 
-bool BoxfilterAct::init(float time, float from, float to)
+bool BoxfilterAct::init(float time, float from, float to, bool isSke)
 {
 	if (ActionInterval::initWithDuration(time))
 	{
@@ -20,6 +20,7 @@ bool BoxfilterAct::init(float time, float from, float to)
 		_from = from;
 		_to = to;
 		_deltaNumber = _to - _from;
+		_isSke = isSke;
 		return true;
 	}
 		
@@ -29,7 +30,7 @@ bool BoxfilterAct::init(float time, float from, float to)
 BoxfilterAct* BoxfilterAct::clone() const
 {
 	auto filter = new BoxfilterAct();
-	filter->init(_durition, _from, _to);
+	filter->init(_durition, _from, _to, _isSke);
 	filter->autorelease();
 
 	return filter;
@@ -38,7 +39,7 @@ BoxfilterAct* BoxfilterAct::clone() const
 
 BoxfilterAct* BoxfilterAct::reverse() const
 {
-	auto filter = BoxfilterAct::create(_durition, _to, _from);
+	auto filter = BoxfilterAct::create(_durition, _to, _from, _isSke);
 	return filter;
 }
 
@@ -49,7 +50,10 @@ void BoxfilterAct::startWithTarget(Node *target)
 	
 	_num = _from;
 
-	_shader = GLProgram::createWithFilenames("myShader/MVP_Stand.vert", "myShader/BoxFilter.frag");
+	if (_isSke)
+		_shader = GLProgram::createWithFilenames("myShader/MVP_Stand.vert", "myShader/BoxFilter.frag");
+	else
+		_shader = GLProgram::createWithFilenames("myShader/P_Stand.vert", "myShader/BoxFilter.frag");
 
 	_state = target->getGLProgramState();
 
@@ -68,15 +72,15 @@ void BoxfilterAct::update(float time)
 }
 
 //方波特效
-EdgeFilterAct* EdgeFilterAct::create(float time, float from, float to)
+EdgeFilterAct* EdgeFilterAct::create(float time, float from, float to, bool isSke)
 {
 	EdgeFilterAct* filter = new EdgeFilterAct();
-	filter->init(time, from, to);
+	filter->init(time, from, to, isSke);
 	filter->autorelease();
 	return filter;
 }
 
-bool EdgeFilterAct::init(float time, float from, float to)
+bool EdgeFilterAct::init(float time, float from, float to, bool isSke)
 {
 	if (ActionInterval::initWithDuration(time))
 	{
@@ -84,6 +88,7 @@ bool EdgeFilterAct::init(float time, float from, float to)
 		_from = from;
 		_to = to;
 		_deltaNum = _to - _from;
+		_isSke = isSke;
 		return true;
 	}
 	return false;
@@ -94,7 +99,10 @@ void EdgeFilterAct::startWithTarget(Node *target)
 	ActionInterval::startWithTarget(target);
 	_num = _from;
 
+	if (_isSke)
 	_shader = GLProgram::createWithFilenames("myShader/MVP_Stand.vert", "myShader/EdgeFilter.frag");
+	else
+	_shader = GLProgram::createWithFilenames("myShader/P_Stand.vert", "myShader/EdgeFilter.frag");
 
 	_state = target->getGLProgramState();
 
@@ -113,22 +121,22 @@ void EdgeFilterAct::update(float time)
 
 EdgeFilterAct* EdgeFilterAct::clone() const
 {
-	auto filter = EdgeFilterAct::create(_duration, _from, _to);
+	auto filter = EdgeFilterAct::create(_duration, _from, _to, _isSke);
 	return filter;
 }
 
 EdgeFilterAct* EdgeFilterAct::reverse() const
 {
-	auto filter = EdgeFilterAct::create(_duration, _to, _from);
+	auto filter = EdgeFilterAct::create(_duration, _to, _from, _isSke);
 	return filter;
 }
 
 //锐化特效
-SharpFilterAct* SharpFilterAct::create(float time, float from, float to)
+SharpFilterAct* SharpFilterAct::create(float time, float from, float to,  bool isSke)
 {
 	auto filter = new SharpFilterAct();
 	
-	if (filter->init(time, from, to))
+	if (filter->init(time, from, to, isSke))
 	{
 		filter->autorelease();
 
@@ -137,7 +145,7 @@ SharpFilterAct* SharpFilterAct::create(float time, float from, float to)
 	return nullptr;
 }
 
-bool SharpFilterAct::init(float time, float from, float to)
+bool SharpFilterAct::init(float time, float from, float to,bool isSke)
 {
 	if (ActionInterval::initWithDuration(time))
 	{
@@ -145,7 +153,7 @@ bool SharpFilterAct::init(float time, float from, float to)
 		_to = to;
 		_duration = time;
 		_deltaNum = _to - _from;
-
+		_isSke = isSke;
 		return true;
 
 	}
@@ -159,7 +167,10 @@ void SharpFilterAct::startWithTarget(Node *target)
 	_num = _from;
 
 	//set the shader
+	if (_isSke)
 	_shader = GLProgram::createWithFilenames("myShader/MVP_Stand.vert", "myShader/SharpFilter.frag");
+	else
+	_shader = GLProgram::createWithFilenames("myShader/P_Stand.vert", "myShader/SharpFilter.frag");
 
 	_state = target->getGLProgramState();
 
@@ -179,12 +190,12 @@ void SharpFilterAct::update(float time)
 
 SharpFilterAct* SharpFilterAct::clone() const
 {
-	auto filter = SharpFilterAct::create(_duration, _from, _to);
+	auto filter = SharpFilterAct::create(_duration, _from, _to, _isSke);
 	return filter;
 }
 
 SharpFilterAct* SharpFilterAct::reverse() const
 {
-	auto filter = SharpFilterAct::create(_duration, _to, _from);
+	auto filter = SharpFilterAct::create(_duration, _to, _from,_isSke);
 	return filter;
 }

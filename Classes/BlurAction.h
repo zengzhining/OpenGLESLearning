@@ -11,7 +11,7 @@ USING_NS_CC;
 class BoxfilterAct : public ActionInterval
 {
 public:
-	static BoxfilterAct* create(float durtion = 1.0f ,float from = 0.0f, float to = 0.01f);
+	static BoxfilterAct* create(float durtion = 1.0f ,float from = 0.0f, float to = 0.01f,bool isSkenAnimation = false);
 
 	virtual BoxfilterAct* clone() const override ;
 	virtual BoxfilterAct* reverse() const override ;
@@ -23,7 +23,7 @@ protected:
 	BoxfilterAct(){};
 	virtual ~BoxfilterAct(){};
 
-	bool init(float durtion, float from, float to);
+	bool init(float durtion, float from, float to, bool isSkenAnimation = false);
 private:
 
 	//动作持续的时间
@@ -39,6 +39,8 @@ private:
 
 	//记录当前的num
 	float _num;
+	//是否是骨骼动画
+	bool _isSke;
 
 	GLProgram* _shader;
 	GLProgramState* _state;
@@ -48,7 +50,7 @@ private:
 class EdgeFilterAct : public ActionInterval
 {
 public:
-	static EdgeFilterAct* create(float time, float from, float to);
+	static EdgeFilterAct* create(float time, float from, float to, bool isSkeleton = false);
 
 	virtual EdgeFilterAct* clone() const override;
 	virtual EdgeFilterAct* reverse() const override;
@@ -61,13 +63,14 @@ protected:
 
 	virtual ~EdgeFilterAct(){}
 
-	bool init(float time, float from, float to);
+	bool init(float time, float from, float to, bool isSkeleton);
 private:
 	float _duration;
 	float _from;
 	float _to;
 	float _deltaNum;
 	float _num;
+	bool _isSke;
 
 	GLProgram* _shader;
 	GLProgramState* _state;
@@ -78,7 +81,7 @@ private:
 class SharpFilterAct : public ActionInterval
 {
 public:
-	static SharpFilterAct* create(float time, float from, float to);
+	static SharpFilterAct* create(float time, float from, float to, bool isSke = false);
 
 	virtual SharpFilterAct* clone() const override;
 	virtual SharpFilterAct* reverse() const override;
@@ -91,7 +94,7 @@ protected:
 
 	virtual ~SharpFilterAct(){}
 
-	bool init(float time, float from, float to);
+	bool init(float time, float from, float to, bool isSke);
 
 private:
 	float _duration;
@@ -99,6 +102,8 @@ private:
 	float _to;
 	float _deltaNum;
 	float _num;
+
+	bool _isSke;
 
 	GLProgram* _shader;
 	GLProgramState* _state;
