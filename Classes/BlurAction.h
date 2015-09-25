@@ -109,5 +109,35 @@ private:
 	GLProgramState* _state;
 };
 
+//置灰特效
+class GreyFilterAct : public ActionInterval
+{
+public:
+	static GreyFilterAct* create(float time, float from, float to, bool isSke = false);
+
+	virtual GreyFilterAct* clone() const override;
+	virtual GreyFilterAct* reverse() const override;
+	virtual void startWithTarget(Node *target) override;
+
+	virtual void update(float time) override;
+
+protected:
+	GreyFilterAct(){}
+
+	virtual ~GreyFilterAct(){}
+	bool init(float time, float from, float to, bool isSke);
+
+private:
+	float _duration;
+	float _from;
+	float _to;
+	float _deltaNum;
+	float _num;
+
+	bool _isSke;
+
+	GLProgram* _shader;
+	GLProgramState* _state;
+};
 
 #endif //__BLURACTION___

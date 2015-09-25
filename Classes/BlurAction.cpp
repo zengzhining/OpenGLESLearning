@@ -199,3 +199,64 @@ SharpFilterAct* SharpFilterAct::reverse() const
 	auto filter = SharpFilterAct::create(_duration, _to, _from,_isSke);
 	return filter;
 }
+
+//置灰特效
+GreyFilterAct* GreyFilterAct::create(float time, float from, float to, bool isSke /* = flase */)
+{
+	GreyFilterAct* filter = new GreyFilterAct();
+	if (filter->init(time, from, to, isSke))
+	{
+		filter->autorelease();
+		return filter;
+	}
+	return nullptr;
+}
+
+bool GreyFilterAct::init(float time, float from, float to, bool isSke)
+{
+	if (ActionInterval::initWithDuration(time))
+	{
+		_duration = time;
+		_from = from;
+		_to = to;
+		_isSke = isSke;
+		_deltaNum = _to - _from;
+		return true;
+	}
+	return false;
+}
+
+void GreyFilterAct::startWithTarget(Node *target)
+{
+	ActionInterval::startWithTarget(target);
+	_num = _from;
+	if (_isSke)
+		_shader = GLProgram::createWithFilenames("myShader/MVP_Stand.vert", "myShader/GreyFilter.frag");
+	else
+		_shader = GLProgram::createWithFilenames("myShader/P_Stand.vert", "myShader/GreyFilter.frag");
+
+	_state = target->getGLProgramState();
+
+	_state->setGLProgram(_shader);
+
+	_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), 0.0f);
+}
+
+void GreyFilterAct::update(float time)
+{
+	auto animationInter = 1.0f / Director::getInstance()->getAnimationInterval();
+	_num += _deltaNum / ((animationInter)* _duration);
+	_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), _num);
+}
+
+GreyFilterAct* GreyFilterAct::clone() const
+{
+	auto filter = GreyFilterAct::create(_duration, _from, _to, _isSke);
+	return filter;
+}
+
+GreyFilterAct* GreyFilterAct::reverse() const
+{
+	auto filter = GreyFilterAct::create(_duration, _to, _from, _isSke);
+	return filter;
+}
