@@ -21,6 +21,9 @@ public:
 	//边沿滤镜
 	void runEdgeFilter();
 
+	//锐化滤镜
+	void runSharpFilter();
+
 	void runOwnAct();
 
 	static Scene* createScene();

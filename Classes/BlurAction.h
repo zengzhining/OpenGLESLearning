@@ -74,5 +74,35 @@ private:
 
 };
 
+//锐化特效
+class SharpFilterAct : public ActionInterval
+{
+public:
+	static SharpFilterAct* create(float time, float from, float to);
+
+	virtual SharpFilterAct* clone() const override;
+	virtual SharpFilterAct* reverse() const override;
+	virtual void startWithTarget(Node *target) override;
+
+	virtual void update(float time) override;
+
+protected:
+	SharpFilterAct(){}
+
+	virtual ~SharpFilterAct(){}
+
+	bool init(float time, float from, float to);
+
+private:
+	float _duration;
+	float _from;
+	float _to;
+	float _deltaNum;
+	float _num;
+
+	GLProgram* _shader;
+	GLProgramState* _state;
+};
+
 
 #endif //__BLURACTION___

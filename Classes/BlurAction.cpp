@@ -62,9 +62,9 @@ void BoxfilterAct::startWithTarget(Node *target)
 
 void BoxfilterAct::update(float time)
 {
-		//单位时间内所要达到的数字
-		_num = _num + _deltaNumber / (60 * _durition);
-		_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), _num );
+	auto animationInter = 1.0f / Director::getInstance()->getAnimationInterval();
+	_num += _deltaNumber / ((animationInter)* _duration);
+	_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), _num );
 }
 
 //方波特效
@@ -120,5 +120,71 @@ EdgeFilterAct* EdgeFilterAct::clone() const
 EdgeFilterAct* EdgeFilterAct::reverse() const
 {
 	auto filter = EdgeFilterAct::create(_duration, _to, _from);
+	return filter;
+}
+
+//锐化特效
+SharpFilterAct* SharpFilterAct::create(float time, float from, float to)
+{
+	auto filter = new SharpFilterAct();
+	
+	if (filter->init(time, from, to))
+	{
+		filter->autorelease();
+
+		return filter;
+	}
+	return nullptr;
+}
+
+bool SharpFilterAct::init(float time, float from, float to)
+{
+	if (ActionInterval::initWithDuration(time))
+	{
+		_from = from;
+		_to = to;
+		_duration = time;
+		_deltaNum = _to - _from;
+
+		return true;
+
+	}
+	return false;
+}
+
+void SharpFilterAct::startWithTarget(Node *target)
+{
+	ActionInterval::startWithTarget(target);
+
+	_num = _from;
+
+	//set the shader
+	_shader = GLProgram::createWithFilenames("myShader/MVP_Stand.vert", "myShader/SharpFilter.frag");
+
+	_state = target->getGLProgramState();
+
+	_state->setGLProgram(_shader);
+
+	_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), _num);
+
+}
+
+void SharpFilterAct::update(float time)
+{
+	auto animationInter = 1.0f / Director::getInstance()->getAnimationInterval();
+	_num += _deltaNum / ((animationInter)* _duration);
+	_state->setUniformFloat(_shader->getUniformLocationForName("u_number"), _num);
+
+}
+
+SharpFilterAct* SharpFilterAct::clone() const
+{
+	auto filter = SharpFilterAct::create(_duration, _from, _to);
+	return filter;
+}
+
+SharpFilterAct* SharpFilterAct::reverse() const
+{
+	auto filter = SharpFilterAct::create(_duration, _to, _from);
 	return filter;
 }
