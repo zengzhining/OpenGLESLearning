@@ -14,11 +14,8 @@ void main()
 	float a = vol_tex.w;
 	vec4 vol_grey = vec4(I, I, I, a);
 
-	if ( textureCoord.y < u_number  && textureCoord.x < u_number)
-	{
-		vol_tex = vol_grey;
-	}
+	vec4 outTex = mix( vol_tex, vol_grey, u_number );
 
-	gl_FragColor = vol_tex;
+	gl_FragColor = outTex;
 
 }

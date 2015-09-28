@@ -8,20 +8,22 @@ USING_NS_CC;
 //注意模糊特效不能两个同时使用，因为无法让一个精灵同时使用两个shader
 
 //方形模糊特效
-class BoxfilterAct : public ActionInterval
+class BoxFilterAct : public ActionInterval
 {
 public:
-	static BoxfilterAct* create(float durtion = 1.0f ,float from = 0.0f, float to = 0.01f,bool isSkenAnimation = false);
+	static BoxFilterAct* create(float durtion = 1.0f ,float from = 0.0f, float to = 0.01f,bool isSkenAnimation = false);
 
-	virtual BoxfilterAct* clone() const override ;
-	virtual BoxfilterAct* reverse() const override ;
+	virtual BoxFilterAct* clone() const override ;
+	virtual BoxFilterAct* reverse() const override ;
 	virtual void startWithTarget(Node *target) override;
+
+	void setShader(std::string key);
 
 	virtual void update(float time);
 protected:
 
-	BoxfilterAct(){};
-	virtual ~BoxfilterAct(){};
+	BoxFilterAct(){};
+	virtual ~BoxFilterAct(){};
 
 	bool init(float durtion, float from, float to, bool isSkenAnimation = false);
 private:
@@ -57,6 +59,7 @@ public:
 	virtual void startWithTarget(Node *target) override;
 
 	virtual void update(float time) override;
+	void setShader(std::string key);
 
 protected:
 	EdgeFilterAct(){}
@@ -89,6 +92,7 @@ public:
 
 	virtual void update(float time) override;
 
+	void setShader(std::string key);
 protected:
 	SharpFilterAct(){}
 
@@ -120,6 +124,8 @@ public:
 	virtual void startWithTarget(Node *target) override;
 
 	virtual void update(float time) override;
+	
+	void setShader(std::string key);
 
 protected:
 	GreyFilterAct(){}
@@ -133,6 +139,8 @@ private:
 	float _to;
 	float _deltaNum;
 	float _num;
+
+	int _direction;
 
 	bool _isSke;
 
